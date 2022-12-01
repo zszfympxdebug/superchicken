@@ -17,7 +17,7 @@ import static com.zszf.superchicken.Superchicken.instance;
 public class Listener implements org.bukkit.event.Listener {
 
     private static final int dupeNum = instance.getConfig().getInt("dupeNum");
-    private static Map<UUID, Long> playerCDMap;
+    private static Map<UUID, Long> playerCDMap = new HashMap<>();
 
     public Listener() {
     }
@@ -26,19 +26,18 @@ public class Listener implements org.bukkit.event.Listener {
     @ParametersAreNonnullByDefault
     public void superChicken(PlayerInteractEntityEvent evt) {
         List<String> enablePlayersString = (List<String>) instance.getConfig().getList("enableChickenDupePlayers");
-        boolean enableThisPlayerDupe;
-        if(playerCDMap.get(evt.getPlayer().getUniqueId()).equals("null")){
-            playerCDMap.put(evt.getPlayer().getUniqueId(), System.currentTimeMillis());
-            enableThisPlayerDupe = true;
-        }else{
-            if(playerCDMap.get(evt.getPlayer().getUniqueId()) + instance.getConfig().getLong("chickenDupeCD") < System.currentTimeMillis()){
-                enableThisPlayerDupe = true;
+        try{
+            Long playerLastDupeTime = playerCDMap.get(evt.getPlayer().getUniqueId());
+            if(playerLastDupeTime + instance.getConfig().getLong("chickenDupeCD") < System.currentTimeMillis()){
+                playerCDMap.put(evt.getPlayer().getUniqueId(), System.currentTimeMillis());
             }else {
-                enableThisPlayerDupe = false;
                 evt.getPlayer().sendMessage("你的鸡刷正在冷却！");
+                return;
             }
+        } catch (NullPointerException e){
+            playerCDMap.put(evt.getPlayer().getUniqueId(), System.currentTimeMillis());
         }
-        if (Superchicken.enableSuperChicken && enableThisPlayerDupe) {
+        if (Superchicken.enableSuperChicken) {
             for (String enablePlayersStr : enablePlayersString) {
                 if (Objects.equals(enablePlayersStr, "all")) {
                     if (evt.getRightClicked().getType().equals(EntityType.CHICKEN)) {
@@ -72,7 +71,6 @@ public class Listener implements org.bukkit.event.Listener {
                 } else {
                     evt.getPlayer().sendMessage("你没有权限来使用鸡刷！");
                 }
-                playerCDMap.put(evt.getPlayer().getUniqueId(), System.currentTimeMillis());
             }
         }
     }
