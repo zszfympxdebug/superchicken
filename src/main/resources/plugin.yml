@@ -1,0 +1,10 @@
+name: Superchicken
+version: '${version}'
+main: com.zszf.superchicken.Superchicken
+commands:
+  item:
+    aliases:
+      - "delitem"
+      - "di"
+    description: "删除掉落物"
+    usage: "/delitem"

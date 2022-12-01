@@ -1,0 +1,8 @@
+enableSuperChicken: true
+dupeNum: 5
+dupeCD: 5
+# 当下面项包含all时全部开启kun刷
+enableChickenDupePlayers:
+  - all
+# 单位ms
+chickenDupeCD: 1000
