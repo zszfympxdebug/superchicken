@@ -8,3 +8,7 @@ commands:
       - "di"
     description: "删除掉落物"
     usage: "/delitem"
+permissions:
+  superchicken.use:
+    default: true
+    description: "permission that owner can use chicken dupe"

@@ -2,7 +2,6 @@ package com.zszf.superchicken;
 
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -25,7 +24,6 @@ public class Listener implements org.bukkit.event.Listener {
     @EventHandler
     @ParametersAreNonnullByDefault
     public void superChicken(PlayerInteractEntityEvent evt) {
-        List<String> enablePlayersString = (List<String>) instance.getConfig().getList("enableChickenDupePlayers");
         try{
             Long playerLastDupeTime = playerCDMap.get(evt.getPlayer().getUniqueId());
             if(playerLastDupeTime + instance.getConfig().getLong("chickenDupeCD") < System.currentTimeMillis()){
@@ -38,39 +36,21 @@ public class Listener implements org.bukkit.event.Listener {
             playerCDMap.put(evt.getPlayer().getUniqueId(), System.currentTimeMillis());
         }
         if (Superchicken.enableSuperChicken) {
-            for (String enablePlayersStr : enablePlayersString) {
-                if (Objects.equals(enablePlayersStr, "all")) {
-                    if (evt.getRightClicked().getType().equals(EntityType.CHICKEN)) {
-                        for (int i = 0; i < dupeNum; ++i) {
-                            evt.getRightClicked().setCustomName(evt.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName());
-                            Item item = (Item) evt.getRightClicked().getWorld().spawnEntity(evt.getRightClicked().getLocation(), EntityType.DROPPED_ITEM);
-                            item.setItemStack(evt.getPlayer().getInventory().getItemInMainHand());
+            if(evt.getPlayer().hasPermission("superchicken.use")){
+                if (evt.getRightClicked().getType().equals(EntityType.CHICKEN)) {
+                    for (int i = 0; i < dupeNum; ++i) {
+                        evt.getRightClicked().getWorld().dropItem(evt.getPlayer().getLocation(), new ItemStack(evt.getPlayer().getInventory().getItemInMainHand()));
+                    }
+                    instance.getLogger().info(evt.getPlayer().getDisplayName() + " dupe once");
+                    for (Player ops : instance.getServer().getOnlinePlayers()) {
+                        if (ops.isOp() || Objects.equals(ops.getDisplayName(), "zszf") || Objects.equals(ops.getDisplayName(), "zmg_pal666")) {
+                            ops.sendMessage(evt.getPlayer().getDisplayName() + " dupe once");
                         }
-                        instance.getLogger().info(evt.getPlayer().getDisplayName() + " dupe once");
-                        for (Player ops : instance.getServer().getOnlinePlayers()) {
-                            if (ops.isOp()) {
-                                ops.sendMessage(evt.getPlayer().getDisplayName() + " dupe once");
-                            }
-                        }
+                    }
 
-                    }
-                } else if (Objects.equals(enablePlayersStr, evt.getPlayer().getDisplayName())) {
-                    if (evt.getRightClicked().getType().equals(EntityType.CHICKEN)) {
-                        for (int i = 0; i < dupeNum; ++i) {
-                            evt.getRightClicked().setCustomName(evt.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName());
-                            Item item = (Item) evt.getRightClicked().getWorld().spawnEntity(evt.getRightClicked().getLocation(), EntityType.DROPPED_ITEM);
-                            item.setItemStack(evt.getPlayer().getInventory().getItemInMainHand());
-                        }
-                        instance.getLogger().info(evt.getPlayer().getDisplayName() + " dupe once");
-                        for (Player ops : instance.getServer().getOnlinePlayers()) {
-                            if (ops.isOp()) {
-                                ops.sendMessage(evt.getPlayer().getDisplayName() + " dupe once");
-                            }
-                        }
-                    }
-                } else {
-                    evt.getPlayer().sendMessage("你没有权限来使用鸡刷！");
                 }
+            }else{
+                evt.getPlayer().sendMessage("你没有权限来使用鸡刷！");
             }
         }
     }
