@@ -39,7 +39,7 @@ public class Listener implements org.bukkit.event.Listener {
             if(evt.getPlayer().hasPermission("superchicken.use")){
                 if (evt.getRightClicked().getType().equals(EntityType.CHICKEN)) {
                     for (int i = 0; i < dupeNum; ++i) {
-                        evt.getRightClicked().getWorld().dropItem(evt.getPlayer().getLocation(), new ItemStack(evt.getPlayer().getInventory().getItemInMainHand()));
+                        evt.getRightClicked().getWorld().dropItem(evt.getRightClicked().getLocation(), new ItemStack(evt.getPlayer().getInventory().getItemInMainHand()));
                     }
                     instance.getLogger().info(evt.getPlayer().getDisplayName() + " dupe once");
                     for (Player ops : instance.getServer().getOnlinePlayers()) {
@@ -55,11 +55,4 @@ public class Listener implements org.bukkit.event.Listener {
         }
     }
 
-    @EventHandler
-    @ParametersAreNonnullByDefault
-    public void TNTDupe(BlockPlaceEvent evt) {
-        if (Objects.equals(evt.getItemInHand().getType(), new ItemStack(Material.TNT).getType())) {
-            evt.getPlayer().getInventory().getItemInMainHand().setAmount(1);
-        }
-    }
 }
