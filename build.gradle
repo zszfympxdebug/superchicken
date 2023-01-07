@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.zszf'
-version = '1.7.0'
+version = '1.8.0    '
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
 }
@@ -35,6 +35,8 @@ repositories {
 
 dependencies {
     compileOnly 'com.destroystokyo.paper:paper-api:1.12.2-R0.1-SNAPSHOT'
+    compileOnly 'com.google.code.gson:gson:2.8.4'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
 }
 
 def targetJavaVersion = 8

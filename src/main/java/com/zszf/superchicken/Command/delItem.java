@@ -37,7 +37,7 @@ public class delItem implements CommandExecutor {
                 }
             }
             instance.getLogger().info("删除了" + sum + "个掉落物！");
-            sender_player.sendMessage("删除了"+sum+"个掉落物");
+            sender_player.sendMessage("删除了" + sum + "个掉落物");
         } catch (ClassCastException evt) {
             for (World world : instance.getServer().getWorlds()) {
                 for (Entity entities : world.getEntities()) {

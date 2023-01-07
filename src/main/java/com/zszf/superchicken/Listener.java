@@ -1,22 +1,23 @@
 package com.zszf.superchicken;
 
-import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 import static com.zszf.superchicken.Superchicken.instance;
 
 public class Listener implements org.bukkit.event.Listener {
 
     private static final int dupeNum = instance.getConfig().getInt("dupeNum");
-    private static Map<UUID, Long> playerCDMap = new HashMap<>();
+    private static final Map<UUID, Long> playerCDMap = new HashMap<>();
 
     public Listener() {
     }
@@ -24,20 +25,21 @@ public class Listener implements org.bukkit.event.Listener {
     @EventHandler
     @ParametersAreNonnullByDefault
     public void superChicken(PlayerInteractEntityEvent evt) {
-        try{
-            Long playerLastDupeTime = playerCDMap.get(evt.getPlayer().getUniqueId());
-            if(playerLastDupeTime + instance.getConfig().getLong("chickenDupeCD") < System.currentTimeMillis()){
-                playerCDMap.put(evt.getPlayer().getUniqueId(), System.currentTimeMillis());
-            }else {
-                evt.getPlayer().sendMessage("你的鸡刷正在冷却！");
-                return;
+        if (evt.getRightClicked().getType().equals(EntityType.CHICKEN)) {
+            try {
+                Long playerLastDupeTime = playerCDMap.get(evt.getRightClicked().getUniqueId());
+                if (playerLastDupeTime + instance.getConfig().getLong("chickenDupeCD") < System.currentTimeMillis()) {
+                    playerCDMap.put(evt.getRightClicked().getUniqueId(), System.currentTimeMillis());
+                } else {
+                    evt.getPlayer().sendMessage("你的鸡刷正在冷却！");
+                    return;
+                }
+            } catch (NullPointerException e) {
+                playerCDMap.put(evt.getRightClicked().getUniqueId(), System.currentTimeMillis());
             }
-        } catch (NullPointerException e){
-            playerCDMap.put(evt.getPlayer().getUniqueId(), System.currentTimeMillis());
-        }
-        if (Superchicken.enableSuperChicken) {
-            if(evt.getPlayer().hasPermission("superchicken.use")){
-                if (evt.getRightClicked().getType().equals(EntityType.CHICKEN)) {
+            if (Superchicken.enableSuperChicken) {
+                if (evt.getPlayer().hasPermission("superchicken.use")) {
+
                     for (int i = 0; i < dupeNum; ++i) {
                         evt.getRightClicked().getWorld().dropItem(evt.getRightClicked().getLocation(), new ItemStack(evt.getPlayer().getInventory().getItemInMainHand()));
                     }
@@ -47,12 +49,10 @@ public class Listener implements org.bukkit.event.Listener {
                             ops.sendMessage(evt.getPlayer().getDisplayName() + " dupe once");
                         }
                     }
-
+                } else {
+                    evt.getPlayer().sendMessage("你没有权限来使用鸡刷！");
                 }
-            }else{
-                evt.getPlayer().sendMessage("你没有权限来使用鸡刷！");
             }
         }
     }
-
 }
